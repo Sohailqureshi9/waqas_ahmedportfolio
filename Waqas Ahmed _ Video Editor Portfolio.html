@@ -1478,7 +1478,7 @@ html {
 <span class="err">
 </span>
 </label>
-<button class="btn p" type="submit">Send message</button>
+<button class="btn p" type="submit">Open Gmail &amp; send</button>
 <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
 </form>
 <iframe name="formSubmitFrame" title="Form submission status" hidden></iframe>
@@ -1686,7 +1686,6 @@ t.classList.add("on");
 setTimeout(()=>t.classList.remove("on"),4000)};
 $("#f").onsubmit=e=>{e.preventDefault();
 const f=e.target;
-const submit=f.querySelector('button[type="submit"]');
 const status=$("#formStatus");
 let ok=true;
 const chk=(n,bad,msg)=>{const i=f[n],s=i.parentElement.querySelector(".err"),invalid=bad(i.value.trim());
@@ -1697,22 +1696,26 @@ chk("name",v=>!v,"Enter your name.");
 chk("email",v=>!/^\S+@\S+\.\S+$/.test(v),"Enter a valid email, like name@mail.com.");
 chk("msg",v=>v.length<10,"Write at least 10 characters about your project.");
 if(!ok)return;
-f.querySelector('[name="_subject"]').value=`New project inquiry: ${f.type.value}`;
-f.querySelector('[name="_replyto"]').value=f.email.value.trim();
-f.querySelector('[name="_url"]').value=location.href;
-submit.disabled=true;
-submit.textContent="Sending...";
-status.className="form-status";
-status.textContent="Sending your message...";
-f.submit();
-setTimeout(()=>{
- f.reset();
- submit.disabled=false;
- submit.textContent="Send message";
+const subject=f.type.value;
+const body=`Name: ${f.name.value.trim()}
+Client email: ${f.email.value.trim()}
+Project type: ${f.type.value}
+
+Message:
+${f.msg.value.trim()}`;
+const composeUrl=`https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${encodeURIComponent(DATA.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+const composeWindow=window.open(composeUrl,"gmailCompose");
+if(composeWindow){
+ composeWindow.focus();
  status.className="form-status success";
- status.textContent="Message submitted. Please check your inbox shortly.";
- toast("Your message has been submitted.");
-},1200)};
+ status.textContent="Gmail opened with your message ready to send.";
+ toast("Gmail compose opened.");
+}else{
+ status.className="form-status error";
+ status.textContent="Please allow pop-ups to open Gmail.";
+ toast("Please allow pop-ups for this website.");
+}
+};
 </script>
 </body>
 </html>
