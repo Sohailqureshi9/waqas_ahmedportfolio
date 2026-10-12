@@ -172,6 +172,12 @@ nav a.on {
   background: #ff7060;
 }
 
+.btn:disabled {
+  opacity:.65;
+  cursor:wait;
+  transform:none
+}
+
 #menu {
   display: none;
 }
@@ -823,6 +829,20 @@ textarea {
   min-height:1.1em
 }
 
+.form-status {
+  min-height:1.4em;
+  color:var(--muted);
+  font-size:.9rem
+}
+
+.form-status.success {
+  color:#6ee7b7
+}
+
+.form-status.error {
+  color:#ff8a7a
+}
+
 #toast {
   position:fixed;
   right:1rem;
@@ -1431,7 +1451,12 @@ html {
 <div class="wrap">
 <h2>Start your project</h2>
 <p class="lead">Tell me what you're making. I reply within 24 hours.</p>
-<form id="f" novalidate>
+<form id="f" action="https://formsubmit.co/waqasahmedbusiness94@gmail.com" method="POST" target="formSubmitFrame" novalidate>
+<input type="hidden" name="_subject" value="New project inquiry">
+<input type="hidden" name="_template" value="table">
+<input type="hidden" name="_captcha" value="false">
+<input type="hidden" name="_replyto" value="">
+<input type="hidden" name="_url" value="">
 <label>Name<input name="name" autocomplete="name" required>
 <span class="err">
 </span>
@@ -1454,7 +1479,9 @@ html {
 </span>
 </label>
 <button class="btn p" type="submit">Send message</button>
+<p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
 </form>
+<iframe name="formSubmitFrame" title="Form submission status" hidden></iframe>
 <div class="row" style="display:flex;gap:.8rem;margin-top:1.2rem;flex-wrap:wrap">
 <a class="btn" id="wa" href="#">Chat on WhatsApp</a>
 <a class="btn" id="em" href="#">Email me</a>
@@ -1486,7 +1513,7 @@ html {
   services, FAQs, niches, and testimonials without changing the layout.
 */
 const DATA = {
-  email: "hello@example.com",
+  email: "waqasahmedbusiness94@gmail.com",
   whatsapp: "971545429586", // country code + number, no + or spaces
   bookingUrl: "", // optional Calendly link; leave empty to scroll to form
   socials: {
@@ -1657,6 +1684,8 @@ t.classList.add("on");
 setTimeout(()=>t.classList.remove("on"),4000)};
 $("#f").onsubmit=e=>{e.preventDefault();
 const f=e.target;
+const submit=f.querySelector('button[type="submit"]');
+const status=$("#formStatus");
 let ok=true;
 const chk=(n,bad,msg)=>{const i=f[n],s=i.parentElement.querySelector(".err"),invalid=bad(i.value.trim());
 s.textContent=invalid?msg:"";
@@ -1666,10 +1695,22 @@ chk("name",v=>!v,"Enter your name.");
 chk("email",v=>!/^\S+@\S+\.\S+$/.test(v),"Enter a valid email, like name@mail.com.");
 chk("msg",v=>v.length<10,"Write at least 10 characters about your project.");
 if(!ok)return;
-const body=`Name: ${f.name.value}\nEmail: ${f.email.value}\nProject: ${f.type.value}\n\n${f.msg.value}`;
-location.href=`mailto:${DATA.email}?subject=${encodeURIComponent("New project: "+f.type.value)}&body=${encodeURIComponent(body)}`;
-toast("Opening your email app. Message ready to send.");
-f.reset()};
+f.querySelector('[name="_subject"]').value=`New project inquiry: ${f.type.value}`;
+f.querySelector('[name="_replyto"]').value=f.email.value.trim();
+f.querySelector('[name="_url"]').value=location.href;
+submit.disabled=true;
+submit.textContent="Sending...";
+status.className="form-status";
+status.textContent="Sending your message...";
+f.submit();
+setTimeout(()=>{
+ f.reset();
+ submit.disabled=false;
+ submit.textContent="Send message";
+ status.className="form-status success";
+ status.textContent="Message submitted. Please check your inbox shortly.";
+ toast("Your message has been submitted.");
+},1200)};
 </script>
 </body>
 </html>
