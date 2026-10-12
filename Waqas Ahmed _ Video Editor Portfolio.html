@@ -1646,7 +1646,9 @@ $("#nic").innerHTML=DATA.niches.map(n=>`<span>${esc(n)}</span>`).join("");
 $("#qs").innerHTML=DATA.quotes.map(q=>`<figure class="q"><p>“${esc(q[0])}”</p><cite>${esc(q[1])}</cite></figure>`).join("");
 $("#soc").innerHTML=Object.entries(DATA.socials).map(([k,v])=>`<a class="btn" href="${esc(v)}" target="_blank" rel="noopener">${esc(k)}</a>`).join("");
 $("#wa").href="https://wa.me/"+DATA.whatsapp;
-$("#em").href="mailto:"+DATA.email;
+$("#em").href=`https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${encodeURIComponent(DATA.email)}`;
+$("#em").target="_blank";
+$("#em").rel="noopener";
 if(DATA.bookingUrl){$("#bookTop").href=DATA.bookingUrl;
 $("#bookTop").target="_blank"}
 $("#faqs").innerHTML=DATA.faq.map(f=>`<details><summary>${esc(f[0])}</summary><p>${esc(f[1])}</p></details>`).join("");
